@@ -16,7 +16,18 @@ export ESPEAK_DATA_PATH=/usr/lib/x86_64-linux-gnu/espeak-ng-data
 # Run FastAPI with CPU extras using uv run
 # Note: espeak may still require manual installation,
 uv pip install -e ".[cpu]"
-uv run --no-sync python docker/scripts/download_model.py --output api/src/models/v1_0
+
+# Download model using the proper Python executable
+if [ "$DOWNLOAD_MODEL" = "true" ] || [ ! -f "api/src/models/v1_0/kokoro-v1_0.pth" ]; then
+    if [ -f "docker/scripts/download_model.py" ]; then
+        echo "Downloading model files..."
+        uv run --no-sync python docker/scripts/download_model.py --output api/src/models/v1_0
+    else
+        echo "Warning: download_model.py not found, model files must be provided manually"
+    fi
+else
+    echo "Model files already exist, skipping download"
+fi
 
 # Apply the misaki patch to fix possible EspeakWrapper issue in older versions
 # echo "Applying misaki patch..."

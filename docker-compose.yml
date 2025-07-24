@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   kokoro-fastapi:
     build:
@@ -8,6 +6,8 @@ services:
     container_name: kokoro-fastapi
     ports:
       - "8880:8880"
+    environment:
+      - DOWNLOAD_MODEL=true
     volumes:
       - ./api/src/models:/app/api/src/models
       - ./api/temp_files:/app/api/temp_files

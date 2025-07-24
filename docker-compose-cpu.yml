@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  kokoro-fastapi-cpu:
+    build:
+      context: .
+      dockerfile: docker/cpu/Dockerfile
+    container_name: kokoro-fastapi-cpu
+    ports:
+      - "8880:8880"
+    environment:
+      - USE_GPU=false
+      - USE_ONNX=false
+      - MODEL_DIR=src/models
+      - VOICES_DIR=src/voices/v1_0
+      - WEB_PLAYER_PATH=/app/web
+      - ESPEAK_DATA_PATH=/usr/lib/x86_64-linux-gnu/espeak-ng-data
+      - PYTHONPATH=/app:/app/api
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./api/src/models:/app/api/src/models
+      - ./api/temp_files:/app/api/temp_files
+      - ./web:/app/web
+    command: >
+      bash -c "
+        echo 'Installing CPU extras...' &&
+        uv pip install -e '.[cpu]' &&
+        echo 'Downloading model...' &&
+        uv run --no-sync python download_model.py --output api/src/models/v1_0
+      &&
+        echo 'Starting server...' &&
+        uv run --no-sync uvicorn api.src.main:app --host 0.0.0.0 --port 8880
+      "
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8880/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s

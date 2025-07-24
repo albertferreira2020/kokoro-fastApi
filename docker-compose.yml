@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  kokoro-fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile.cpu-script
+    container_name: kokoro-fastapi
+    ports:
+      - "8880:8880"
+    volumes:
+      - ./api/src/models:/app/api/src/models
+      - ./api/temp_files:/app/api/temp_files
+      - ./web:/app/web
+      # Mount docker scripts directory to access download_model.py
+      - ./docker/scripts:/app/docker/scripts
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8880/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s

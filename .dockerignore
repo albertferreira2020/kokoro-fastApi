@@ -1,5 +1,6 @@
 # Version control
 .git
+.gitignore
 
 # Python
 __pycache__
@@ -18,6 +19,53 @@ __pycache__
 .venv
 env/
 venv/
+
+# Model files (will be downloaded in container)
+api/src/models/v1_0/*.pth
+api/src/models/v1_0/*.json
+
+# Temporary files
+api/temp_files/*
+*.tmp
+*.log
+
+# Documentation and development
+README.md
+CHANGELOG.md
+CONTRIBUTING.md
+PORTAINER_DEPLOYMENT.md
+*.md
+
+# Development tools
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker files (keep only what we need)
+.dockerignore
+docker-compose-cpu.yml
+docker-compose.yml.bak
+
+# Scripts not needed in container
+simple_download.py
+start-gpu.sh
+start-gpu.ps1
+start-cpu.ps1
+start-gpu_mac.sh
+
+# Charts and assets
+charts/
+assets/
+examples/voice_samples/
+
+# Large example files
+examples/*.mp3
+examples/*.wav
 ENV/
 
 # IDE
